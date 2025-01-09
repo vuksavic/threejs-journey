@@ -11,8 +11,8 @@ const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
 const sizes = {
-    width: 800,
-    height: 600
+    width: window.innerWidth,
+    height: window.innerHeight
 }
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
@@ -25,12 +25,22 @@ controls.enableDamping = true
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setSize(sizes.width, sizes.height)
 
 const clock = new THREE.Clock()
 
-const tick = () =>
-{
+window.addEventListener('resize', () => {
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+
+    renderer.setSize(sizes.width, sizes.height)
+})
+
+const tick = () => {
     const elapsedTime = clock.getElapsedTime()
     controls.update()
     renderer.render(scene, camera)
