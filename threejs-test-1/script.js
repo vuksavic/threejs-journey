@@ -6,13 +6,20 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 const gui = new GUI()
 const debugObject = {
-    color: '#3a6ea6'
+    color: '#3a6ea6',
+    spin: () => {
+        gsap.to(mesh.rotation, {
+            duration: 1,
+            y: mesh.rotation.y + Math.PI * 2
+        })
+    },
+    subdivision: 20
 }
 
 const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
-const geometry = new THREE.SphereGeometry(1, 32, 32)
+const geometry = new THREE.BoxGeometry(1, 1, 1)
 const material = new THREE.MeshBasicMaterial({ color: debugObject.color, wireframe: false })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
@@ -25,7 +32,16 @@ gui
     .onChange((value) => {
         material.color.set(debugObject.color)
     })
-
+gui.add( debugObject, 'spin' )
+gui.add( debugObject, 'subdivision' )
+    .min(1)
+    .max(64)
+    .step(1)
+    .onFinishChange(() => {
+        console.log('subdiv changed'),
+        mesh.geometry.dispose()
+        mesh.geometry = new THREE.BoxGeometry(1, 1, 1, debugObject.subdivision, debugObject.subdivision, debugObject.subdivision)
+    })
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
