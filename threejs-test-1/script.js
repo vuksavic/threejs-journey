@@ -5,22 +5,25 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 const gui = new GUI()
+const debugObject = {
+    color: '#3a6ea6'
+}
 
 const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 const geometry = new THREE.SphereGeometry(1, 32, 32)
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false })
+const material = new THREE.MeshBasicMaterial({ color: debugObject.color, wireframe: false })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
 gui.add( material, 'wireframe' )
 gui.add( mesh.position, 'y', - 3, 3, 0.01 ).name( 'Elevation' )
 gui
-    .addColor(material, 'color')
+    .addColor(debugObject, 'color')
     .name('Color')
     .onChange((value) => {
-        console.log(material.color + " " + value.getHexString())
+        material.color.set(debugObject.color)
     })
 
 const sizes = {
