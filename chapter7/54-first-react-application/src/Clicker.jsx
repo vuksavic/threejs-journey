@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Clicker() {
-    const countState = useState(0)
-    const count = countState[0]
-    const setCount = countState[1]
-    console.log(countState)
+    const [ count, setCount] = useState(parseInt(localStorage.getItem('count') ?? 0))
+
+    useEffect(() => {
+    }, [])
+
+    useEffect(() => {
+        document.title = `You clicked ${ count } times`
+    }, [ count ])
 
     const buttonClick = () => {
         setCount(count + 1)
