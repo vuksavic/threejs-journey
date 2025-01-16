@@ -2,7 +2,12 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { gsap } from 'gsap'
-
+import { EffectComposer } from 'three/examples/jsm/Addons.js'
+import { RenderPass } from 'three/examples/jsm/Addons.js'
+import { GlitchPass } from 'three/examples/jsm/Addons.js'
+import { ShaderPass } from 'three/examples/jsm/Addons.js'
+import { RGBShiftShader } from 'three/examples/jsm/Addons.js'
+import { GammaCorrectionShader } from 'three/examples/jsm/Addons.js'
 /**
  * Loaders
  */
@@ -190,6 +195,23 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+const effectComposer = new EffectComposer(renderer)
+const renderPass = new RenderPass(scene, camera)
+const rgbShiftPass = new ShaderPass(RGBShiftShader)
+const glitchPass = new GlitchPass()
+const hammaCorrectionPass = new ShaderPass(GammaCorrectionShader)
+effectComposer.addPass(renderPass)
+effectComposer.addPass(rgbShiftPass)
+// effectComposer.addPass(glitchPass)
+effectComposer.addPass(hammaCorrectionPass)
+// glitchPass.goWild = true
+effectComposer.setSize(sizes.width, sizes.height)
+effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+const renderTarget = new THREE.WebGLRenderTarget(sizes.width, sizes.height, {
+    samples: renderer.getPixelRatio() === 1 ? 2 : 0
+})
+
 const points = [{
     position: new THREE.Vector3(1.55, 0.3, -0.6),
     element: document.querySelector('.point-0')
@@ -238,6 +260,7 @@ const tick = () =>
 
     // Render
     renderer.render(scene, camera)
+    effectComposer.render()
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
